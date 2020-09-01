@@ -1,62 +1,92 @@
-import React from 'react'
-import {Link,withRouter} from 'react-router-dom'
+import React, { Fragment } from "react";
+import { Link, withRouter } from "react-router-dom";
+import { signout, isAutheticated } from "../auth/helper";
 
-const currentTab = (history,path) =>{
-  if(history.location.pathname === path)
-  {
-    return {color: "#FFFFFF"}
+const currentTab = (history, path) => {
+  if (history.location.pathname === path) {
+    return { color: "#2ecc72" };
+  } else {
+    return { color: "#FFFFFF" };
   }
-  else
-  {
-    return {color: "#d1d1d1"}
-  }
-}
+};
 
- const Menu = ({history}) => {
-    return (
-        <div>
-       <nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" >T-Shirt Store</a>
-    </div>
-    <ul class="nav navbar-nav">
-     
-      <li><Link style={currentTab(history,"/")}>Home</li>
-      
+const Menu = ({ history }) => (
+  <div>
+    <ul className="nav nav-tabs bg-dark">
+      <li className="nav-item">
+        <Link style={currentTab(history, "/")} className="nav-link" to="/">
+          Home
+        </Link>
+      </li>
+      <li className="nav-item">
+        <Link
+          style={currentTab(history, "/cart")}
+          className="nav-link"
+          to="/cart"
+        >
+          Cart
+        </Link>
+      </li>
+      {isAutheticated() && isAutheticated().user.role === 0 && (
+        <li className="nav-item">
+          <Link
+            style={currentTab(history, "/user/dashboard")}
+            className="nav-link"
+            to="/user/dashboard"
+          >
+            U. Dashboard
+          </Link>
+        </li>
+      )}
+      {isAutheticated() && isAutheticated().user.role === 1 && (
+        <li className="nav-item">
+          <Link
+            style={currentTab(history, "/admin/dashboard")}
+            className="nav-link"
+            to="/admin/dashboard"
+          >
+            A. Dashboard
+          </Link>
+        </li>
+      )}
+      {!isAutheticated() && (
+        <Fragment>
+          <li className="nav-item">
+            <Link
+              style={currentTab(history, "/signup")}
+              className="nav-link"
+              to="/signup"
+            >
+              Signup
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
+              style={currentTab(history, "/signin")}
+              className="nav-link"
+              to="/signin"
+            >
+              Sign In
+            </Link>
+          </li>
+        </Fragment>
+      )}
+      {isAutheticated() && (
+        <li className="nav-item">
+          <span
+            className="nav-link text-warning"
+            onClick={() => {
+              signout(() => {
+                history.push("/");
+              });
+            }}
+          >
+            Signout
+          </span>
+        </li>
+      )}
     </ul>
-
-
-    <ul class="nav navbar-nav">
-  
-
-      <li><a href="#">Cart</a></li>
-    </ul>
-    
-    <ul class="nav navbar-nav">
-  
-
-      <li><a href="#">Dashboard</a></li>
-    </ul>
-
-    <ul class="nav navbar-nav navbar-right">
-      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-    </ul>
-    
-    <ul class="nav navbar-nav navbar-right">
-      
-      <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-    </ul>
-      
-    <ul class="nav navbar-nav navbar-right">
-      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Logout</a></li>
-    </ul>
-
   </div>
-</nav>
-
-        </div>
-    )
-}
+);
 
 export default withRouter(Menu);
